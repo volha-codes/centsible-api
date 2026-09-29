@@ -14,6 +14,7 @@ npm-debug.log*
 # editor
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 
 # OS
