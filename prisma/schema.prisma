@@ -19,3 +19,18 @@ model Account {
   currency        String
   startingBalance Float
 }
+
+enum CategoryType {
+  income
+  expense
+}
+
+model Category {
+  id    String       @id @default(cuid())
+  name  String
+  icon  String
+  color String
+  type  CategoryType
+
+  @@unique([name, type])
+}
