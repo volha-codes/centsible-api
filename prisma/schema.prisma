@@ -18,6 +18,8 @@ model Account {
   name            String
   currency        String
   startingBalance Float
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
 }
 
 enum CategoryType {
@@ -26,11 +28,22 @@ enum CategoryType {
 }
 
 model Category {
-  id    String       @id @default(cuid())
-  name  String
-  icon  String
-  color String
-  type  CategoryType
+  id     String       @id @default(cuid())
+  name   String
+  icon   String
+  color  String
+  type   CategoryType
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
-  @@unique([name, type])
+  @@unique([name, type, userId])
+}
+
+model User {
+  id             String     @id @default(cuid())
+  email          String     @unique
+  hashedPassword String
+  createdAt      DateTime   @default(now())
+  accounts       Account[]
+  categories     Category[]
 }
