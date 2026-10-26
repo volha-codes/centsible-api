@@ -8,6 +8,7 @@ import { hash, verify } from '@node-rs/argon2';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
+import { ERROR_AUTHENTICATION_MESSAGE } from './auth.constants';
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -74,5 +75,24 @@ export class AuthService {
         firstName: user.firstName,
       },
     };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(ERROR_AUTHENTICATION_MESSAGE);
+    }
+
+    return user;
   }
 }

@@ -1,10 +1,12 @@
-import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import type { FastifyReply } from 'fastify';
 import { LoginDto } from './dto/login.dto';
 import { COOKIE_NAME } from './auth.constants';
+import { Public } from './public.decorator';
+import { CurrentUser } from './current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +25,7 @@ export class AuthController {
     });
   }
 
+  @Public()
   @Post('register')
   async register(
     @Body() registerDto: RegisterDto,
@@ -40,6 +43,7 @@ export class AuthController {
     return data.user;
   }
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   async login(
@@ -56,9 +60,15 @@ export class AuthController {
     return data.user;
   }
 
+  @Public()
   @Post('logout')
   @HttpCode(204)
   logout(@Res({ passthrough: true }) response: FastifyReply) {
     response.clearCookie(COOKIE_NAME, { path: '/' });
+  }
+
+  @Get('me')
+  getProfile(@CurrentUser() userId: string) {
+    return this.authService.getProfile(userId);
   }
 }
