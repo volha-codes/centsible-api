@@ -13,7 +13,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   await app.register(fastifyCookie);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(',') ?? ['http://localhost:5173'],
