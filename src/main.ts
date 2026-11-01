@@ -1,3 +1,4 @@
+import fastifyCookie from '@fastify/cookie';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -11,7 +12,8 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-  app.useGlobalPipes(new ValidationPipe());
+  await app.register(fastifyCookie);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(',') ?? ['http://localhost:5173'],
