@@ -61,6 +61,17 @@ export class AuthController {
   }
 
   @Public()
+  @Post('demo')
+  @HttpCode(200)
+  async demo(@Res({ passthrough: true }) response: FastifyReply) {
+    const data = await this.authService.loginDemo();
+
+    this.setCookie(response, data.accessToken);
+
+    return data.user;
+  }
+
+  @Public()
   @Post('logout')
   @HttpCode(204)
   logout(@Res({ passthrough: true }) response: FastifyReply) {

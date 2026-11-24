@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { hash, verify } from '@node-rs/argon2';
 import { Prisma } from '@prisma/client';
+import { DemoService } from 'src/demo/demo.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { ERROR_AUTHENTICATION_MESSAGE } from './auth.constants';
@@ -19,7 +20,15 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly demoService: DemoService,
   ) {}
+
+  async loginDemo() {
+    const user = await this.demoService.reset();
+    const accessToken = await this.jwtService.signAsync({ sub: user.id });
+
+    return { accessToken, user };
+  }
 
   async register({ email, firstName, password }: RegisterDto) {
     try {
