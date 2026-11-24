@@ -72,6 +72,16 @@ export class CategoriesService {
   }
 
   async remove(id: string, userId: string) {
+    const usedBy = await this.prisma.transaction.count({
+      where: { categoryId: id, userId },
+    });
+
+    if (usedBy > 0) {
+      throw new ConflictException(
+        'Category is used by transactions and cannot be deleted',
+      );
+    }
+
     try {
       return await this.prisma.category.delete({ where: { id, userId } });
     } catch (error) {
