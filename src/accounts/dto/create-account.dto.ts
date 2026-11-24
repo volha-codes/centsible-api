@@ -1,4 +1,6 @@
-import { IsNumber, IsString, MinLength } from 'class-validator';
+import { IsInt, IsString, Max, Min, MinLength } from 'class-validator';
+
+export const MAX_BALANCE = 2_000_000_000;
 
 export class CreateAccountDto {
   @IsString()
@@ -8,6 +10,8 @@ export class CreateAccountDto {
   @IsString()
   currency: string;
 
-  @IsNumber()
+  @IsInt()
+  @Min(-MAX_BALANCE)
+  @Max(MAX_BALANCE)
   startingBalance: number;
 }

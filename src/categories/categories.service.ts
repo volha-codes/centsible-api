@@ -75,11 +75,16 @@ export class CategoriesService {
     try {
       return await this.prisma.category.delete({ where: { id, userId } });
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException('Category not found');
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Category not found');
+        }
+
+        if (error.code === 'P2003') {
+          throw new ConflictException(
+            'Category is used by transactions and cannot be deleted',
+          );
+        }
       }
 
       throw error;
