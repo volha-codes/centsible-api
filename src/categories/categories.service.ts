@@ -72,19 +72,24 @@ export class CategoriesService {
   }
 
   async remove(id: string, userId: string) {
+    const usedBy = await this.prisma.transaction.count({
+      where: { categoryId: id, userId },
+    });
+
+    if (usedBy > 0) {
+      throw new ConflictException(
+        'Category is used by transactions and cannot be deleted',
+      );
+    }
+
     try {
       return await this.prisma.category.delete({ where: { id, userId } });
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Category not found');
-        }
-
-        if (error.code === 'P2003') {
-          throw new ConflictException(
-            'Category is used by transactions and cannot be deleted',
-          );
-        }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('Category not found');
       }
 
       throw error;
