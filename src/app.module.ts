@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     CategoriesModule,
     AuthModule,
     TransactionsModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
