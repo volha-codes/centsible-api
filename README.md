@@ -62,6 +62,7 @@ minus expenses.
 | POST   | `/transactions`     | yes  | Create a transaction                        |
 | PATCH  | `/transactions/:id` | yes  | Update a transaction                        |
 | DELETE | `/transactions/:id` | yes  | Delete a transaction                        |
+| GET    | `/stats/overview`   | yes  | Dashboard figures for a month and currency  |
 
 `GET /transactions` accepts the optional filters `accountId`, `categoryId`, `from` and
 `to` (ISO dates). The range is half-open: `from` is included, `to` is not, so a month
@@ -99,6 +100,20 @@ An account, a category and a transaction look like this:
   "note": "Lunch"
 }
 ```
+
+`GET /stats/overview?month=2026-11&currency=PLN` returns the dashboard figures for one
+month, counting only accounts in that currency:
+
+- `balance` at the end of the month and `previousBalance` at the end of the month
+  before;
+- `income` and `expense` for the month, and `previousIncome` and `previousExpense`
+  for the month before;
+- `byCategory`: the month's spending per category, biggest first;
+- `monthly`: six months ending with the chosen one, oldest first, each with its income,
+  expenses and per-category totals (months without transactions are zeros);
+- `recent`: the five latest transactions up to the end of the month.
+
+Both parameters are required: `month` as `YYYY-MM` and a three-letter `currency`.
 
 Rules for transactions: the `amount` is always positive (the category's type decides
 whether it is income or expense), the account and the category must be yours, and
@@ -138,7 +153,8 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 Jest (`npm test`). Covered so far: the demo data (references, amounts, dates, balances
 for several "today" values) and the demo service (reset, cooldown, concurrent
-requests, retry after a failure).
+requests, retry after a failure), and the dashboard calculations (month boundaries
+across years, balances, monthly totals and per-category sums).
 
 ## Deployment
 
@@ -151,7 +167,8 @@ share one origin and the session cookie stays first-party.
 
 ## Not done yet
 
-- Tests for auth, accounts, categories and transactions
+- Tests for auth, accounts, categories, transactions and the stats queries
+- Summing the dashboard figures in the database instead of in memory
 - Pagination for the transactions list
 - Refresh tokens and a way to revoke a token before it expires
 - Rate limiting on sign-in
